@@ -1,0 +1,18 @@
+from qiskit.circuit.library import QFT
+from qiskit.quantum_info import Statevector
+from qiskit impport QuantumCircuit
+import numpy as np
+
+pi=np.pi
+
+def myQFT(nqubits):
+    myQFT_circuit = QuantumCircuit(nqubits)
+    
+    for qubit in range(nqubits):
+        myQFT_circuit.h(qubit)
+        for otherqubit in range(qubit+1, nqubits):
+            myQFT_circuit.cul(pi/(2**(otherqubit-qubit)),otherqubit,qubit)
+            
+    return myQFT_circuit
+    
+#https://www.youtube.com/watch?v=pq2jkfJlLmY
