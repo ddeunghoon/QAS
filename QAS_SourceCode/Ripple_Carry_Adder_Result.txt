@@ -1,0 +1,92 @@
+import numpy as np
+
+# Importing standard Qiskit libraries
+from qiskit import *
+from qiskit.tools.jupyter import *
+from qiskit.visualization import *
+from ibm_quantum_widgets import *
+from qiskit.providers.aer import QasmSimulator
+from qiskit.compiler import transpile
+from qiskit.transpiler import PassManager
+from qiskit.transpiler.passes import Unroller
+from qiskit.tools.visualization import plot_histogram
+
+# Loading your IBM Quantum account(s)
+provider = IBMQ.get_provider(hub ='ibm-q-education', group='ibm-quantum-1', project='quantum-hackatho')
+backend = provider.get_backend('ibm_perth')
+
+# normal_rippleCarryAdder
+qc = QuantumCircuit(6)
+qc.cx(3,1)
+qc.cx(1,0)
+qc.cx(2,4)
+qc.ccx(0,3,1)
+qc.cx(2,1)
+qc.ccx(1,4,2)
+qc.cx(2,5)
+qc.ccx(1,4,2)
+qc.cx(2,1)
+qc.cx(4,1)
+qc.ccx(0,4,1)
+qc.cx(1,0)
+qc.cx(0,3)
+qc.measure_all()
+qc.draw(output='mpl')
+
+job = execute(qc, backend)
+result = job.result()
+counts_qc = result.get_counts(qc)
+print("\nTotal count for output 10 are:",counts_qc)
+plot_histogram(counts_qc)
+
+#transpiled normal_rippleCarryAdder
+qc_transpile = transpile(qc, backend)
+qc_transpile.draw(output='mpl')
+
+job = execute(qc_transpile, backend)
+result = job.result()
+counts_qctr = result.get_counts(qc_transpile)
+print("\nTotal count for 00 output are:",counts_qctr)
+plot_histogram(counts_qctr)
+
+# #ccx in rippleCarryAdder is replaced into ch-cz-ch gates
+our_qc = QuantumCircuit(6)
+our_qc.cx(3,1)
+our_qc.cx(1,0)
+our_qc.cx(2,4)
+our_qc.ch(0,1)
+our_qc.cz(3,1)
+our_qc.ch(0,1)
+our_qc.cx(2,1)
+our_qc.ch(1,2)
+our_qc.cz(4,2)
+our_qc.ch(1,2)
+our_qc.cx(2,5)
+our_qc.ch(1,2)
+our_qc.cz(4,2)
+our_qc.ch(1,2)
+our_qc.cx(2,1)
+our_qc.cx(4,1)
+our_qc.ch(0,1)
+our_qc.cz(4,1)
+our_qc.ch(0,1)
+our_qc.cx(1,0)
+our_qc.cx(0,3)
+our_qc.measure_all()
+our_qc.draw(output='mpl')
+
+job = execute(our_qc, backend)
+result = job.result()
+counts_our_qc = result.get_counts(our_qc)
+print("\nTotal count for 00 and 11 are:",counts_our_qc)
+plot_histogram(counts_our_qc)
+
+# transpiled full_adder which has ch-cz-ch
+our_qc_transpile=transpile(our_qc, backend, optimization_level = 3)
+our_qc_transpile.draw(output='mpl')
+
+job = execute(our_qc_transpile, backend)
+result = job.result()
+counts_our_qctr = result.get_counts(our_qc_transpile)
+print("\nTotal count for 00 output are:",counts_our_qctr)
+plot_histogram(counts_our_qctr)
