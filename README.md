@@ -1,6 +1,7 @@
 # QAS TEAM
 
 ### 양자정보경진대회 IBM Chellenge Topic
+https://github.com/qiskit-community/quantum-hackathon-korea-22
 
 ## Challenge topic 1: Build your minimal quantum circuit - making a quantum calculator
 
